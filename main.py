@@ -7,13 +7,30 @@ show_timings = [
     ['11:00am', '2:30pm', '5:30pm','8:30pm'],
 ]
 tickets = [
-    [60,60,60,60,60],
-    [30,20,10,20],
-    [0,10,5,4],
-    [55,50,35,25],
-    [55,50,58,30],
+    [
+        [[1,0,1,1,1],[1,1,1,1,1],[1,1,1,1,1],[1,0,0,1,1]],[[1,1,1,1,1],[1,1,1,1,1],[1,1,1,1,1],[1,1,1,1,1]],
+        [[1,1,1,1,1],[1,1,1,1,1],[1,1,1,1,1],[1,1,1,1,1]],[[1,1,1,1,1],[1,1,1,1,1],[1,1,1,1,1],[1,1,1,1,1]],
+        [[1,1,1,1,1],[1,1,1,1,1],[1,1,1,1,1],[1,1,1,1,1]]
+    ],
+    [
+        [[1,1,1,1,1],[1,1,1,1,1],[1,1,1,1,1],[1,1,1,1,1]],[[1,1,1,1,1],[1,1,1,1,1],[1,1,1,1,1],[1,1,1,1,1]],
+        [[1,1,1,1,1],[1,1,1,1,1],[1,1,1,1,1],[1,1,1,1,1]],[[1,1,1,1,1],[1,1,1,1,1],[1,1,1,1,1],[1,1,1,1,1]]
+    ],
+    [
+        [[1,1,1,1,1],[1,1,1,1,1],[1,1,1,1,1],[1,1,1,1,1]],[[1,1,1,1,1],[1,1,1,1,1],[1,1,1,1,1],[1,1,1,1,1]],
+        [[1,1,1,1,1],[1,1,1,1,1],[1,1,1,1,1],[1,1,1,1,1]],[[1,1,1,1,1],[1,1,1,1,1],[1,1,1,1,1],[1,1,1,1,1]]
+    ],
+    [
+        [[1,1,1,1,1],[1,1,1,1,1],[1,1,1,1,1],[1,1,1,1,1]],[[1,1,1,1,1],[1,1,1,1,1],[1,1,1,1,1],[1,1,1,1,1]],
+        [[1,1,1,1,1],[1,1,1,1,1],[1,1,1,1,1],[1,1,1,1,1]],[[1,1,1,1,1],[1,1,1,1,1],[1,1,1,1,1],[1,1,1,1,1]]
+    ],
+    [
+        [[1,1,1,1,1],[1,1,1,1,1],[1,1,1,1,1],[1,1,1,1,1]],[[1,1,1,1,1],[1,1,1,1,1],[1,1,1,1,1],[1,1,1,1,1]],
+        [[1,1,1,1,1],[1,1,1,1,1],[1,1,1,1,1],[1,1,1,1,1]],[[1,1,1,1,1],[1,1,1,1,1],[1,1,1,1,1],[1,1,1,1,1]],
+    ]
 ]
-admin_menu = ['Add Movie', 'Remove Movie', 'Update Movie', 'Add Shows', 'Remove Shows', 'Update Show', 'Add Tickets', 'View Bookings', 'Exit']
+
+admin_menu = ['Add Movie', 'Remove Movie', 'Update Movie', 'Add Shows', 'Remove Shows', 'Update Show', 'Add Tickets', 'Remove Seats', 'Update Seats', 'View Bookings', 'Exit']
 bookings = [10,5,12,44]
 
 
@@ -55,9 +72,13 @@ while True:
                 break
 
         # Showing tickets
-        available_tickets = tickets[selected_movie][selected_show_time]
+        total_available_tickets = 0
+        for i in range(len(tickets[selected_movie][selected_show_time])):
+            for j in tickets[selected_movie][selected_show_time][i]:
+                if j != 0:
+                    total_available_tickets+=1
         print('-' * 30)
-        print('Available tickets are : ', available_tickets)
+        print('Available tickets are : ', total_available_tickets)
         print('-' * 30)
 
         while True:
@@ -68,10 +89,36 @@ while True:
             if status == 'Yes':
                 while True:
                     booked_tickets = int(input('How many tickets want to book? : '))
-                    if booked_tickets <= available_tickets:
-                        tickets[selected_movie][selected_show_time] = available_tickets - booked_tickets
-                        print('Congratulations! You have successfully booked ',booked_tickets, 'tickets')
+                    if booked_tickets <= total_available_tickets:
+                        for i in range(0,len(tickets[selected_movie][selected_show_time])+1):
+                            print('   ', i, end='',sep='')
+                        print()
+                        for i in range(len(tickets[selected_movie][selected_show_time])):
+                            print(i, '-', sep='', end='')
+                            for j in tickets[selected_movie][selected_show_time][i]:
+                                print('|', ' ', '|','-', sep='',end='')
+                            print()
                         bookings.append(booked_tickets)
+                        i=1
+                        while i<=booked_tickets:
+                            while True:
+                                row = int(input('select row: '))
+                                if row < len(tickets[selected_movie][selected_show_time]):
+                                    while True:
+                                        col = int(input('select col: '))
+                                        if col < len(tickets[selected_movie][selected_show_time][row]):
+                                            if tickets[selected_movie][selected_show_time][row][col] != 0:
+                                                tickets[selected_movie][selected_show_time][row][col] = 0
+                                                i+=1
+                                            else:
+                                                print('Already Booked Dude! Try other!')
+                                            break
+                                        else:
+                                            print('Invalid Column!')
+                                    break
+                                else:
+                                    print('Invalid row!')
+
                         print('=' * 30)
                         print(movies_list[selected_movie], ' ', show_timings[selected_movie][selected_show_time], ' ', booked_tickets, 'tickets')
                         print('=' * 30)
@@ -97,16 +144,16 @@ while True:
             print(i, '-', admin_menu[i])
 
         while True:
-            status = int(input('Select One Admin Bruooh :' ))
+            status = int(input('Select One of the menu list?  :' ))
             
             # exit logic
-            if status == 8:
-                print('Thanks for visiting...')
+            if status == 10:
+                print('Thanks for visiting! Come again later...')
                 break
     
             # Add Movie logic
             elif status == 0:
-                movie = input('Enter new movie: ')
+                movie = input('Enter new movie to add : ')
                 movies_list.append(movie)
                 print('Yaahoo! successfully added to movies list!')
                 break
@@ -144,12 +191,13 @@ while True:
     
             # Add Show time logic
             elif status == 3:
+                print('---Running movies are : ')
                 for i in range(len(movies_list)):
                     print(i, '-', movies_list[i])
                 while True:
                     select_movie = int(input('Select Movie :'))
                     if select_movie < len(movies_list):
-                        print('Existing Show Times are : ')
+                        print('--- Existing Show Times are : ')
                         for i in range(len(show_timings[select_movie])):
                             print(i, '-', show_timings[select_movie][i])
                         add_show_time = input('Add Show Time : ')
@@ -162,11 +210,13 @@ while True:
     
             # Remove Show Time logic
             elif status == 4:
+                print('---Running movies are : ')
                 for i in range(len(movies_list)):
                     print(i, '-', movies_list[i])
                 while True:
                     select_movie = int(input('Select Movie :'))
                     if select_movie < len(movies_list):
+                        print('---Existing Show times are : ')
                         for i in range(len(show_timings[select_movie])):
                             print(i, '-', show_timings[select_movie][i])
                         while True:
@@ -184,11 +234,13 @@ while True:
     
             # Update Show Time logic
             elif status == 5:
+                print('---Running movies are : ')
                 for i in range(len(movies_list)):
                     print(i, '-', movies_list[i])
                 while True:
                     select_movie = int(input('Select Movie :'))
                     if select_movie < len(movies_list):
+                        print('--- Existing Show times are : ')
                         for i in range(len(show_timings[select_movie])):
                             print(i, '-', show_timings[select_movie][i])
                         while True:
@@ -207,19 +259,36 @@ while True:
     
             # Add Tickets logic
             elif status == 6:
+                print('---Running movies are : ')
                 for i in range(len(movies_list)):
                     print(i, '-', movies_list[i])
                 while True:
                     select_movie = int(input('Select Movie :'))
                     if select_movie < len(movies_list):
+                        print('--- Running Show times are : ')
                         for i in range(len(show_timings[select_movie])):
                             print(i, '-', show_timings[select_movie][i])
                         while True:
                             update_show_time = int(input('Select Show Time : '))
                             if update_show_time < len(show_timings[select_movie]):
-                                print('Available tickets are : ', tickets[select_movie][update_show_time])
+                                total_available_tickets = 0
+                                for i in range(len(tickets[select_movie][update_show_time])):
+                                    for j in tickets[select_movie][update_show_time][i]:
+                                        if j != 0:
+                                            total_available_tickets+=1
+                                print('Available tickets are : ', total_available_tickets)
                                 add_tickets = int(input('How many tickets want to add? : '))
-                                tickets[select_movie][update_show_time] += add_tickets
+                                i = 1
+                                seat = []
+                                while i<=add_tickets:
+                                    seat.append(1)
+                                    i+=1
+                                tickets[select_movie][update_show_time].append(seat)
+                                for i in range(len(tickets[select_movie][update_show_time])):
+                                    print(i, '-', sep='', end='')
+                                    for j in tickets[select_movie][update_show_time][i]:
+                                        print('|', ' ', '|','-', sep='',end='')
+                                    print()
                                 print('Yaahoo! Successfully added tickets! ')
                                 break
                             else:
@@ -228,9 +297,51 @@ while True:
                     else:
                         print('Invalid Movie!')
                 break
-    
-            # View Booking logic
+
+            # Remove seats/tickets logic
             elif status == 7:
+                print('---Running movies are : ')
+                for i in range(len(movies_list)):
+                    print(i, '-', movies_list[i])
+                while True:
+                    select_movie = int(input('Select Movie :'))
+                    if select_movie < len(movies_list):
+                        print('---Running Show times are : ')
+                        for i in range(len(show_timings[select_movie])):
+                            print(i, '-', show_timings[select_movie][i])
+                        while True:
+                            select_show_time = int(input('Select Show Time : '))
+                            if select_show_time < len(show_timings[select_movie]):
+                                total_available_seats = 0
+                                for i in range(len(tickets[select_movie][select_show_time])):
+                                    for j in tickets[select_movie][select_show_time][i]:
+                                        if j != 0:
+                                            total_available_seats+=1
+                                print('Available seats are : ', total_available_seats)
+                                remove_seats = int(input('How many seats want to remove? : '))
+                                i = 1
+                                while i<=remove_seats:
+                                    last = len(tickets[select_movie][select_show_time])-1
+                                    tickets[select_movie][select_show_time][last].pop()
+                                    i+=1
+                                
+                                for i in range(len(tickets[select_movie][select_show_time])):
+                                    print(i, '-', sep='', end='')
+                                    for j in tickets[select_movie][select_show_time][i]:
+                                        print('|', ' ', '|','-', sep='',end='')
+                                    print()
+                                print('Yaahoo! Successfully removed seats! ')
+                                break
+                            else:
+                                print('Invalid Show Time')
+                        break
+                    else:
+                        print('Invalid Movie!')
+                break
+
+            # View Booking logic
+            elif status == 9:
+                print('--- Booking ---')
                 total_tickets_booked = 0
                 for i in range(len(bookings)):
                     print(bookings[i],'tickets are booked! ')
